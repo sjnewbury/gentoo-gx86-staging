@@ -1,0 +1,4 @@
+d /var/cache/cups 0755 root lp -
+d /var/cache/cups/rss 0775 root lp -
+d /run/cups 0755 root lp -
+d /run/cups/certs 0511 lp lpadmin -

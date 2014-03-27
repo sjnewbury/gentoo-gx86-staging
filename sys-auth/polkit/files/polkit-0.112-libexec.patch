@@ -1,0 +1,55 @@
+--- ./src/polkitagent/polkitagentsession.c~	2013-04-29 18:28:57.000000000 +0100
++++ ./src/polkitagent/polkitagentsession.c	2013-12-04 10:57:08.009883682 +0000
+@@ -620,7 +620,7 @@
+       goto error;
+     }
+ 
+-  helper_argv[0] = PACKAGE_PREFIX "/lib/polkit-1/polkit-agent-helper-1";
++  helper_argv[0] = PACKAGE_PREFIX "/libexec/polkit-1/polkit-agent-helper-1";
+   helper_argv[1] = passwd->pw_name;
+   helper_argv[2] = session->cookie;
+   helper_argv[3] = NULL;
+--- ./src/polkitagent/Makefile.am~	2013-04-29 18:28:57.000000000 +0100
++++ ./src/polkitagent/Makefile.am	2013-12-04 10:57:09.099863633 +0000
+@@ -78,7 +78,7 @@
+ 
+ libpolkit_agent_1_la_LDFLAGS = -export-symbols-regex '(^polkit_.*)'
+ 
+-libprivdir = $(prefix)/lib/polkit-1
++libprivdir = $(libexecdir)/polkit-1
+ libpriv_PROGRAMS = polkit-agent-helper-1
+ 
+ polkit_agent_helper_1_SOURCES = 					\
+--- ./configure.ac~	2013-05-15 22:10:23.000000000 +0100
++++ ./configure.ac	2013-12-04 10:57:11.174825464 +0000
+@@ -566,7 +566,7 @@
+ 
+ "
+ 
+-echo "NOTE: The file ${prefix}/lib/polkit-1/polkit-agent-helper-1 must be owned"
++echo "NOTE: The file ${libexecdir}/polkit-1/polkit-agent-helper-1 must be owned"
+ echo "      by root and have mode 4755 (setuid root binary)"
+ echo
+ 
+--- ./src/polkitbackend/Makefile.am~	2013-05-06 19:28:21.000000000 +0100
++++ ./src/polkitbackend/Makefile.am	2013-12-04 11:07:47.933171476 +0000
+@@ -67,7 +67,7 @@
+ 
+ # ----------------------------------------------------------------------------------------------------
+ 
+-libprivdir = $(prefix)/lib/polkit-1
++libprivdir = $(libexecdir)/polkit-1
+ libpriv_PROGRAMS = polkitd
+ 
+ polkitd_SOURCES = 							\
+--- ./data/Makefile.am~	2013-04-29 18:28:57.000000000 +0100
++++ ./data/Makefile.am	2013-12-04 11:14:57.268261841 +0000
+@@ -2,7 +2,7 @@
+ 
+ NULL =
+ 
+-libprivdir = $(prefix)/lib/polkit-1
++libprivdir = $(libexecdir)/polkit-1
+ 
+ # ----------------------------------------------------------------------------------------------------
+ 

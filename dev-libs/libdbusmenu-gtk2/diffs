@@ -1,0 +1,57 @@
+--- ../libdbusmenu-gtk2/libdbusmenu-gtk2-0.6.2.ebuild	2013-09-23 12:55:21.637201485 +0100
++++ libdbusmenu-gtk3-0.6.2.ebuild	2013-09-23 13:02:52.733851739 +0100
+@@ -8,7 +8,7 @@
+ 
+ inherit autotools flag-o-matic multilib-minimal
+ 
+-MY_PN=${PN/-gtk2}
++MY_PN=${PN/-gtk3}
+ 
+ DESCRIPTION="Library to pass menu structure across DBus"
+ HOMEPAGE="http://launchpad.net/dbusmenu"
+@@ -22,7 +22,7 @@
+ RDEPEND=">=dev-libs/glib-2.32
+ 	>=dev-libs/dbus-glib-0.100
+ 	dev-libs/libxml2
+-	>=x11-libs/gtk+-2.18:2
++	>=x11-libs/gtk+-3.2:3
+ 	introspection? ( >=dev-libs/gobject-introspection-1[${MULTILIB_USEDEP}] )
+ 	~dev-libs/libdbusmenu-${PV}
+ 	"
+@@ -64,7 +64,7 @@
+ 		--with-html-dir=/usr/share/doc/${PF}/html \
+ 		--libdir=/usr/$(get_libdir)/${PN} \
+ 		--includedir=/usr/include/${PN} \
+-		--with-gtk=2
++		--with-gtk=3
+ }
+ 
+ multilib_src_test() { :; } #440192
+@@ -75,11 +75,6 @@
+ 	# move pkgconfig and girepository dirs into place
+ 	mv ${ED}/usr/$(get_libdir)/${PN}/pkgconfig ${ED}/usr/$(get_libdir)
+ 	mv ${ED}/usr/$(get_libdir)/${PN}/girepository-1.0 ${ED}/usr/$(get_libdir)
+-
+-	# Provided by dev-libs/libdbusmenu to avoid slot conflicts :-/
+-	rm -f ${ED}/usr/$(get_libdir)/${PN}/libdbusmenu-glib.so* || die
+-	rm -f ${ED}/usr/$(get_libdir)/pkgconfig/dbusmenu-glib-0.4.pc || die
+-	rm -f ${ED}/usr/$(get_libdir)/girepository-1.0/Dbusmenu-0.4.typelib || die
+ }
+ 
+ multilib_src_install_all() {
+@@ -94,14 +89,7 @@
+ 		[[ -d ${ED}/${b} ]] && dosym ${b} /usr/share/gtk-doc/html/${PF}/${a}
+ 	done
+ 
+-	# the core vala/introspection files are provided by dev-libs/libdbusmenu
+-	rm -f ${ED}/usr/share/gir-1.0/Dbusmenu-0.4.gir
+-	rm -f ${ED}/usr/share/vala/vapi/Dbusmenu-0.4.vapi
+-    
+-	# remove libdbusmenu-glib includes
+-    rm -rf ${ED}/usr/include/${PN}/libdbusmenu-glib-0.4
+-
+-	# avoid another collision
++	# avoid core collision
+ 	rm ${ED}/usr/libexec/dbusmenu-bench
+ 
+ 	prune_libtool_files

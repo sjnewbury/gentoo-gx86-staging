@@ -1,0 +1,11 @@
+--- ./CMakeLists.txt~	2013-12-06 13:34:15.000000000 +0000
++++ CMakeLists.txt	2013-12-06 13:39:16.641989239 +0000
+@@ -47,7 +47,7 @@
+ endif()
+ 
+ # Conditionally build bindings
+-if(NOT WIN32)
++if(NOT WIN32 AND NOT DISABLE_BINDINGS)
+     add_subdirectory(bindings)
+ endif()
+ 
