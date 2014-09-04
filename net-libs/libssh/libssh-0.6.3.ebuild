@@ -5,7 +5,7 @@
 EAPI=5
 
 MY_P=${PN}-${PV/_rc/rc}
-inherit eutils cmake-multilib multilib multilib-minimal
+inherit eutils cmake-multilib
 
 DESCRIPTION="Access a working SSH implementation by means of a library"
 HOMEPAGE="http://www.libssh.org/"
@@ -42,8 +42,6 @@ src_prepare() {
 	sed -i \
 		-e '/add_subdirectory(examples)/s/^/#DONOTWANT/' \
 		CMakeLists.txt || die
-
-	cmake-multilib_src_prepare
 }
 
 src_configure() {

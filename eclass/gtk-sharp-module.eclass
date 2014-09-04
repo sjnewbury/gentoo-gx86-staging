@@ -1,6 +1,6 @@
-# Copyright 1999-2012 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/eclass/gtk-sharp-module.eclass,v 1.36 2012/09/27 16:35:41 axs Exp $
+# $Header: $
 
 # @ECLASS: gtk-sharp-module.eclass
 # @MAINTAINER:
@@ -137,7 +137,7 @@ esac
 case ${PF} in
 	#gtk-sharp tarball
 	gtk-sharp-docs*)
-		add_depend ">=virtual/monodoc-2.0"
+		add_depend ">=dev-lang/mono-2.0"
 		;;
 	gtk-sharp-gapi*)
 		add_rdepend "!<=dev-dotnet/gtk-sharp-2.12.7:2"
@@ -507,7 +507,7 @@ gtk-sharp-tarball_src_configure() {
 # for each ebuild be only its own dependencies. Without patching configure.
 # Is only called by gtk-sharp-module_src_configure when $GTK_SHARP_MODULE
 # is a member of $gnome_sharp_module_list.
-kgnome-sharp-tarball_src_configure() {
+gnome-sharp-tarball_src_configure() {
 	has "${EAPI:-0}" 2 && ! use prefix && EPREFIX=
 	pkg_check_modules_override GLADESHARP glade-sharp-2.0
 	pkg_check_modules_override GAPI gapi-2.0
@@ -561,7 +561,7 @@ gtk-sharp-module_src_compile() {
 _gtk-sharp-module_src_install() {
 	pushd "${BUILD_DIR}/${GTK_SHARP_MODULE_DIR}" &>/dev/null
 	emake DESTDIR="${D}" install || die "emake install failed"
-	#mono_multilib_comply
+	mono_multilib_comply
 	find "${D}" -type f -name '*.la' -exec rm -rf '{}' '+' || die "la removal failed"
 	multilib_is_native_abi || find "${D}" -type f -name '*.xml' -exec rm -rf '{}' '+' || die "xml removal failed"
 	[[  $(find "${D}" -type f|wc -l) -lt 3 ]] && die "Too few files. This smells like a failed install."
@@ -569,7 +569,7 @@ _gtk-sharp-module_src_install() {
 	popd &>/dev/null
 }
 gtk-sharp-module_src_install() {
-	multilib_parallel_foreach_abi _gtk-sharp-module_src_install
+	multilib_foreach_abi _gtk-sharp-module_src_install
 }
 
 EXPORT_FUNCTIONS src_prepare src_configure src_compile src_install

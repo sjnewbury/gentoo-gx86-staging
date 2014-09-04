@@ -1,0 +1,20 @@
+--- ./mx.pc.in~	2012-08-08 15:08:03.000000000 +0100
++++ ./mx.pc.in	2014-05-02 07:48:18.385204988 +0100
+@@ -1,6 +1,6 @@
+ prefix=@prefix@
+ exec_prefix=${prefix}
+-libdir=${exec_prefix}/lib
++libdir=@libdir@
+ includedir=${exec_prefix}/include
+ 
+ Name: Mx
+--- ./mx-gtk.pc.in~	2012-08-08 15:08:12.000000000 +0100
++++ ./mx-gtk.pc.in	2014-05-02 07:48:17.864148180 +0100
+@@ -1,6 +1,6 @@
+ prefix=@prefix@
+ exec_prefix=${prefix}
+-libdir=${exec_prefix}/lib
++libdir=@libdir@
+ includedir=${exec_prefix}/include
+ 
+ Name: MxGtk

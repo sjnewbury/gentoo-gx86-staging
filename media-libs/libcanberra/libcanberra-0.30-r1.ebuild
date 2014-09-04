@@ -19,7 +19,7 @@ COMMON_DEPEND="media-libs/libvorbis[${MULTILIB_USEDEP}]
 	>=sys-devel/libtool-2.2.6b
 	alsa? (
 		media-libs/alsa-lib:=[${MULTILIB_USEDEP}]
-		udev? ( >=virtual/udev-171:=[${MULTILIB_USEDEP}] ) )
+		udev? ( >=virtual/libudev-171:=[${MULTILIB_USEDEP}] ) )
 	gstreamer? ( media-libs/gstreamer:1.0[${MULTILIB_USEDEP}] )
 	gtk? (
 		>=dev-libs/glib-2.32:2[${MULTILIB_USEDEP}]

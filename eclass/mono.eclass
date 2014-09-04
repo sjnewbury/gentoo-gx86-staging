@@ -12,7 +12,7 @@
 # MONO_SHARED_DIR and sets LC_ALL in order to prevent errors during compilation
 # of dotnet packages.
 
-inherit multilib
+inherit multilib-minimal
 
 # >=mono-0.92 versions using mcs -pkg:foo-sharp require shared memory, so we set the
 # shared dir to ${T} so that ${T}/.wapi can be used during the install process.
@@ -45,18 +45,51 @@ egacinstall() {
 mono_multilib_comply() {
 	use !prefix && has "${EAPI:-0}" 0 1 2 && ED="${D}"
 	local dir finddirs=() mv_command=${mv_command:-mv}
-	if ! multilib_is_native_abi && [[ -d "${ED}/usr/lib" && "$(get_libdir)" != "lib" ]]
+	# For each ABI libdir move into a temporary dir so they don't get
+	# overridden on every ABI install
+	if [[ -d "${ED}/usr/lib" ]]
 	then
-		if ! [[ -d "${ED}"/usr/"$(get_libdir)" ]]
+		if ! [[ -d "${ED}"/usr/lib."${ABI}" ]]
 		then
-			mkdir "${ED}"/usr/"$(get_libdir)" || die "Couldn't mkdir ${ED}/usr/$(get_libdir)"
+			mkdir "${ED}"/usr/lib."${ABI}" || die "Couldn't mkdir ${ED}/usr/lib.${ABI}"
 		fi
-		${mv_command} "${ED}"/usr/lib/* "${ED}"/usr/"$(get_libdir)"/ || die "Moving files into correct libdir failed"
+		${mv_command} "${ED}"/usr/lib/* "${ED}"/usr/lib."${ABI}"/ || die "Moving files into temporary libdir failed"
 		rm -rf "${ED}"/usr/lib
-		for dir in "${ED}"/usr/"$(get_libdir)"/pkgconfig "${ED}"/usr/share/pkgconfig
+	fi
+	if multilib_is_native_abi
+	then
+		# move everything into the final places
+		for this_abi in $(get_all_abis)
 		do
-
-			if [[ -d "${dir}" && "$(find "${dir}" -name '*.pc')" != "" ]]
+			if [[ -d "${ED}"/usr/lib.${this_abi} ]]
+			then
+				einfo "Fixing up libdir for ${this_abi}"
+				if ! [[ -d "${ED}"/usr/"$(get_abi_LIBDIR ${this_abi})" ]]
+				then
+					mkdir "${ED}"/usr/"$(get_abi_LIBDIR ${this_abi})" || \
+						die "Couldn't mkdir ${ED}/usr/$(get_abi_LIBDIR ${this_abi})"
+				fi
+				${mv_command} "${ED}"/usr/lib.${this_abi}/* "${ED}"/usr/"$(get_abi_LIBDIR ${this_abi})"/ || \
+					die "Moving files into correct libdir failed"
+				rm -rf "${ED}"/usr/lib."${this_abi}"
+					[[ -d "${ED}"/usr/lib."${this_abi}" ]] && \
+						${mv_command} "${ED}"/usr/lib."${this_abi}" "${ED}"/usr/"$(get_abi_LIBDIR ${this_abi})"
+			fi
+			for dir in "${ED}"/usr/"$(get_abi_LIBDIR ${this_abi})"/pkgconfig
+			do
+				if [[ -d "${dir}" && "$(find "${dir}" -name '*.pc')" != "" ]]
+				then
+					pushd "${dir}" &> /dev/null
+					sed  -i -r -e 's:/(lib)([^a-zA-Z0-9]|$):/'"$(get_abi_LIBDIR ${this_abi})"'\2:g' \
+						*.pc \
+						|| die "Sedding some sense into pkgconfig files failed."
+					popd "${dir}" &> /dev/null
+				fi
+			done
+		done		
+		for dir in "${ED}"/usr/share/pkgconfig
+		do
+				if [[ -d "${dir}" && "$(find "${dir}" -name '*.pc')" != "" ]]
 			then
 				pushd "${dir}" &> /dev/null
 				sed  -i -r -e 's:/(lib)([^a-zA-Z0-9]|$):/'"$(get_libdir)"'\2:g' \
@@ -76,6 +109,5 @@ mono_multilib_comply() {
 				fi
 			done
 		fi
-
 	fi
 }

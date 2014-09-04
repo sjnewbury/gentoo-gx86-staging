@@ -7,9 +7,7 @@ EAPI="5"
 SCM=""
 if [ "${PV%9999}" != "${PV}" ] ; then # Live ebuild
 	SCM=git-2
-	EGIT_BRANCH=cl_branch
-#	EGIT_REPO_URI="git://anongit.freedesktop.org/git/vaapi/intel-driver"
-EGIT_REPO_URI=git://people.freedesktop.org/~yakuiz/intel-driver
+	EGIT_REPO_URI="git://anongit.freedesktop.org/git/vaapi/intel-driver"
 fi
 
 inherit autotools ${SCM} multilib-minimal

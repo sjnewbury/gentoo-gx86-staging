@@ -1,0 +1,109 @@
+--- /var/lib/layman/gnome/gnome-extra/evolution-data-server/evolution-data-server-3.11.92.ebuild	2014-03-24 19:10:27.079707077 +0000
++++ evolution-data-server-3.11.92.ebuild	2014-04-28 20:19:07.816153164 +0100
+@@ -9,7 +9,7 @@
+ VALA_MIN_API_VERSION="0.18"
+ VALA_USE_DEPEND="vapigen"
+ 
+-inherit db-use flag-o-matic gnome2 python-any-r1 vala virtualx
++inherit autotools db-use flag-o-matic gnome2 python-any-r1 vala virtualx
+ if [[ ${PV} = 9999 ]]; then
+ 	inherit gnome2-live
+ fi
+@@ -19,7 +19,7 @@
+ 
+ # Note: explicitly "|| ( LGPL-2 LGPL-3 )", not "LGPL-2+".
+ LICENSE="|| ( LGPL-2 LGPL-3 ) BSD Sleepycat"
+-SLOT="0/49" # subslot = libcamel-1.2 soname version
++SLOT="0/45" # subslot = libcamel-1.2 soname version
+ IUSE="api-doc-extras +gnome-online-accounts +gtk +introspection ipv6 ldap kerberos vala +weather"
+ REQUIRED_USE="vala? ( introspection )"
+ 
+@@ -32,26 +32,22 @@
+ fi
+ 
+ RDEPEND="
+-	>=app-crypt/gcr-3.4
+-	>=app-crypt/libsecret-0.5[crypt]
++	>=dev-libs/glib-2.34:2
+ 	>=dev-db/sqlite-3.5:=
+-	>=dev-libs/glib-2.36:2
+ 	>=dev-libs/libgdata-0.10:=
++	>=app-crypt/libsecret-0.5
+ 	>=dev-libs/libical-0.43:=
+-	>=net-libs/libsoup-2.42:2.4
++	>=net-libs/libsoup-2.40.3:2.4
+ 	>=dev-libs/libxml2-2
++	>=sys-libs/db-4:=
+ 	>=dev-libs/nspr-4.4:=
+ 	>=dev-libs/nss-3.9:=
+-	>=sys-libs/db-4:=
++	>=app-crypt/gcr-3.4
+ 
+-	dev-libs/icu
+ 	sys-libs/zlib:=
+ 	virtual/libiconv
+ 
+-	gtk? (
+-		>=app-crypt/gcr-3.4[gtk]
+-		>=x11-libs/gtk+-3.2:3
+-	)
++	gtk? ( >=x11-libs/gtk+-3.2:3 )
+ 	gnome-online-accounts? ( >=net-libs/gnome-online-accounts-3.8 )
+ 	introspection? ( >=dev-libs/gobject-introspection-0.9.12 )
+ 	kerberos? ( virtual/krb5:= )
+@@ -71,11 +67,8 @@
+ # eautoreconf needs:
+ #	>=gnome-base/gnome-common-2
+ 
+-if [[ ${PV} = 9999 ]]; then
+-	DEPEND="${DEPEND}
+-		doc? ( >=dev-util/gtk-doc-1.14 )
+-	"
+-fi
++[[ ${PV} = 9999 ]] && DEPEND="${DEPEND}
++	doc? ( >=dev-util/gtk-doc-1.14 )"
+ 
+ pkg_setup() {
+ 	python-any-r1_pkg_setup
+@@ -83,6 +76,11 @@
+ 
+ src_prepare() {
+ 	use vala && vala_src_prepare
++
++	epatch "${FILESDIR}"/${P}-fix-with-libdb.patch
++
++	eautoreconf
++
+ 	gnome2_src_prepare
+ 
+ 	# /usr/include/db.h is always db-1 on FreeBSD
+@@ -96,6 +94,8 @@
+ 
+ src_configure() {
+ 	# phonenumber does not exist in tree
++	# kerberos m4 script is not compatible with multilib systems where
++	# lib64 is not symlinked to lib when --krb5=/usr
+ 	gnome2_src_configure \
+ 		$(use_enable api-doc-extras gtk-doc) \
+ 		$(use_with api-doc-extras private-docs) \
+@@ -103,16 +103,17 @@
+ 		$(use_enable gtk) \
+ 		$(use_enable introspection) \
+ 		$(use_enable ipv6) \
+-		$(use_with kerberos krb5 "${EPREFIX}"/usr) \
++		$(use_with kerberos krb5-libs="${EPREFIX}"/usr/$(get_libdir) ) \
++		$(use_with kerberos krb5-includes="${EPREFIX}"/usr/include ) \
+ 		$(use_with ldap openldap) \
+ 		$(use_enable vala vala-bindings) \
+ 		$(use_enable weather) \
+ 		--enable-google \
++		--enable-nntp \
+ 		--enable-largefile \
+ 		--enable-smime \
+-		--with-libdb="${EPREFIX}"/usr \
++		--with-libdb \
+ 		--without-phonenumber \
+-		--disable-examples \
+ 		--disable-uoa
+ }
+ 

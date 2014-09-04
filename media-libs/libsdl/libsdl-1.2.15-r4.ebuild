@@ -65,6 +65,8 @@ MULTILIB_WRAPPED_HEADERS=(
 		/usr/include/SDL/SDL_stdinc.h
 		/usr/include/SDL/begin_code.h
 		/usr/include/SDL/close_code.h
+		/usr/include/SDL/SDL_error.h
+		/usr/include/SDL/SDL_version.h
 )        
 
 S=${WORKDIR}/SDL-${PV}

@@ -36,7 +36,7 @@ RDEPEND="
 				virtual/glu[${MULTILIB_USEDEP}] )
 	pulseaudio? ( media-sound/pulseaudio[${MULTILIB_USEDEP}] )
 	tslib? ( x11-libs/tslib[${MULTILIB_USEDEP}] )
-	udev? ( virtual/udev[${MULTILIB_USEDEP}] )
+	udev? ( virtual/libudev[${MULTILIB_USEDEP}] )
 	X? (
 		x11-libs/libX11[${MULTILIB_USEDEP}]
 		x11-libs/libXcursor[${MULTILIB_USEDEP}]

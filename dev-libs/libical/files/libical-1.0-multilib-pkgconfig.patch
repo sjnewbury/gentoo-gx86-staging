@@ -1,0 +1,11 @@
+--- ./CMakeLists.txt.orig	2014-05-01 08:28:24.000000000 +0100
++++ ./CMakeLists.txt	2014-05-01 08:37:48.845714419 +0100
+@@ -196,7 +196,7 @@
+ set(VERSION "${PROJECT_VERSION}")
+ set(prefix "${CMAKE_INSTALL_PREFIX}")
+ set(exec_prefix "\${prefix}")
+-set(libdir "\${exec_prefix}/lib")
++set(libdir "\${exec_prefix}/lib${LIB_SUFFIX}")
+ set(includedir "\${prefix}/include")
+ set(PTHREAD_LIBS "${CMAKE_THREAD_LIBS_INIT}")
+ 

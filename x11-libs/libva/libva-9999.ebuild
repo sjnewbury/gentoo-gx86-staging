@@ -7,9 +7,9 @@ EAPI=5
 SCM=""
 if [ "${PV%9999}" != "${PV}" ] ; then # Live ebuild
 	SCM=git-2
-	EGIT_BRANCH=cl_branch
-#	EGIT_REPO_URI="git://anongit.freedesktop.org/vaapi/libva"
-	EGIT_REPO_URI=git://people.freedesktop.org/~yakuiz/libva
+	EGIT_REPO_URI="git://anongit.freedesktop.org/vaapi/libva"
+#	EGIT_BRANCH=cl_branch
+#	EGIT_REPO_URI=git://people.freedesktop.org/~yakuiz/libva
 fi
 
 inherit autotools ${SCM} multilib multilib-minimal
