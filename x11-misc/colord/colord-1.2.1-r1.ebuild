@@ -1,12 +1,14 @@
-# Copyright 1999-2013 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header:
+# $Header: /var/cvsroot/gentoo-x86/x11-misc/colord/colord-1.2.1-r1.ebuild,v 1.4 2014/08/14 12:40:38 jer Exp $
 
 EAPI="5"
-VALA_MIN_API_VERSION="0.18"
+GCONF_DEBUG="no"
+GNOME2_LA_PUNT="yes"
 VALA_USE_DEPEND="vapigen"
+VALA_MIN_API_VERSION="0.18"
 
-inherit bash-completion-r1 check-reqs eutils user systemd base udev vala \
+inherit bash-completion-r1 check-reqs eutils gnome2 user systemd udev vala \
 	multilib-minimal
 
 DESCRIPTION="System service to accurately color manage input and output devices"
@@ -15,25 +17,34 @@ SRC_URI="http://www.freedesktop.org/software/colord/releases/${P}.tar.xz"
 
 LICENSE="GPL-2+"
 SLOT="0/2" # subslot = libcolord soname version
-KEYWORDS="~alpha ~amd64 ~arm ~ia64 ~mips ~ppc ~ppc64 ~sparc ~x86 ~x86-fbsd"
-IUSE="examples extra-print-profiles +gusb +introspection scanner systemd +udev vala"
+KEYWORDS="~alpha amd64 ~arm hppa ~ia64 ~mips ~ppc ~ppc64 ~sparc x86 ~x86-fbsd"
+
+# We prefer policykit enabled by default, bug #448058
+IUSE="examples extra-print-profiles +gusb +introspection +policykit scanner systemd +udev vala"
 REQUIRED_USE="
 	gusb? ( udev )
 	scanner? ( udev )
-	vala? ( introspection )"
+	vala? ( introspection )
+"
 
 COMMON_DEPEND="
-	dev-db/sqlite:3=[${MULTILIB_USEDEP}]
-	>=dev-libs/glib-2.36:2[${MULTILIB_USEDEP}]
-	>=media-libs/lcms-2.5:2=[${MULTILIB_USEDEP}]
-	>=sys-auth/polkit-0.103[${MULTILIB_USEDEP}]
-	gusb? ( >=dev-libs/libgusb-0.1.1 )
-	introspection? ( >=dev-libs/gobject-introspection-0.9.8[${MULTILIB_USEDEP}] )
+	dev-db/sqlite:3=
+	>=dev-libs/glib-2.36:2
+	>=media-libs/lcms-2.5:2=
+	gusb? ( >=dev-libs/libgusb-0.1.1[introspection?] )
+	introspection? ( >=dev-libs/gobject-introspection-0.9.8 )
+	policykit? ( >=sys-auth/polkit-0.103 )
 	scanner? ( media-gfx/sane-backends )
-	systemd? ( >=sys-apps/systemd-44[${MULTILIB_USEDEP}] )
-	udev? ( virtual/libgudev[${MULTILIB_USEDEP}] )"
+	systemd? ( >=sys-apps/systemd-44:0= )
+	udev? (
+		virtual/udev
+		virtual/libgudev:=
+		virtual/libudev:=
+		)
+"
 RDEPEND="${COMMON_DEPEND}
-	!media-gfx/shared-color-profiles"
+	!media-gfx/shared-color-profiles
+"
 DEPEND="${COMMON_DEPEND}
 	dev-libs/libxslt
 	>=dev-util/gtk-doc-am-1.9
@@ -41,7 +52,8 @@ DEPEND="${COMMON_DEPEND}
 	>=sys-devel/gettext-0.17
 	virtual/pkgconfig
 	extra-print-profiles? ( media-gfx/argyllcms )
-	vala? ( $(vala_depend) )"
+	vala? ( $(vala_depend) )
+"
 
 # FIXME: needs pre-installed dbus service files
 RESTRICT="test"
@@ -62,29 +74,27 @@ pkg_setup() {
 
 src_prepare() {
 	use vala && vala_src_prepare
+	gnome2_src_prepare
 }
 
 multilib_src_configure() {
 	# Reverse tools require gusb
 	# bash-completion test does not work on gentoo
-	local myeconfargs=()
-
-	myeconfargs+=(
+		myeconfargs+=(
 		--disable-bash-completion
 		--disable-examples
-		--disable-gtk-doc
 		--disable-static
-		--disable-volume-search
-		--enable-polkit
+		--enable-libcolordcompat
 		--with-daemon-user=colord
 		--includedir="/usr/$(get_libdir)/${PN}/include"
 		--localstatedir="${EPREFIX}"/var
 		$(use_enable introspection)
+		$(use_enable policykit polkit)
 		$(use_enable systemd systemd-login)
-		$(use_enable udev gudev)
-		--with-udevrulesdir="$(udev_get_udevdir)"/rules.d
+		$(use_enable udev)
+		--with-udevrulesdir="$(get_udevdir)"/rules.d
 		"$(systemd_with_unitdir)"
-	)
+		)
 
 	if multilib_is_native_abi ; then
 		myeconfargs+=(
@@ -105,11 +115,15 @@ multilib_src_configure() {
 		)
 	fi
 
-	ECONF_SOURCE="${S}" econf "${myeconfargs[@]}"
+	ECONF_SOURCE="${S}" gnome2_src_configure "${myeconfargs[@]}"
+}
+
+multilib_src_install() {
+	gnome2_src_install	
 }
 
 multilib_src_install_all() {
-	DOCS=(AUTHORS ChangeLog MAINTAINERS NEWS README TODO)
+	DOCS="AUTHORS ChangeLog MAINTAINERS NEWS README.md TODO"
 
 	newbashcomp data/colormgr colormgr
 	rm -vr "${ED}etc/bash_completion.d"
@@ -123,6 +137,4 @@ multilib_src_install_all() {
 		insinto /usr/share/doc/${PF}/examples
 		doins examples/*.c
 	fi
-
-	prune_libtool_files --modules
 }
