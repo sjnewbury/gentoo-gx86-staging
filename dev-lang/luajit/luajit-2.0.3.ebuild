@@ -31,7 +31,6 @@ src_prepare(){
 		epatch "${DISTDIR}/${HOTFIX}"
 	fi
 	sed -i "s,PREFIX= /usr/local,PREFIX= ${EPREFIX}/usr," Makefile || die 'sed failed.'
-	sed -i "s,=lib,=$(get_libdir)," etc/${PN}.pc || die 'sed2 failed.'
 }
 
 src_compile() {
@@ -61,6 +60,9 @@ src_install(){
 		INSTALL_LIB="${ED%/}/usr/$(get_libdir)"
 
 	pax-mark m "${ED}usr/bin/luajit-${MY_PV}"
+
+	sed -i "s,=lib,=$(get_libdir)," \
+		"${ED}usr/$(get_libdir)/pkgconfig/${PN}.pc" || die 'sed2 failed.'
 
 	cd "${S}"/doc
 	dohtml -r *

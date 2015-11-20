@@ -34,8 +34,8 @@ COMMON_DEPEND="
 	>=dev-libs/libnl-3.2.7:3=[${MULTILIB_USEDEP}]
 	>=sys-auth/polkit-0.106
 	>=net-libs/libsoup-2.26:2.4=[${MULTILIB_USEDEP}]
-	>=virtual/udev-165[gudev]
-	bluetooth? ( >=net-wireless/bluez-4.82 )
+	>=virtual/libgudev-165:=
+	bluetooth? ( >=net-wireless/bluez-5 )
 	avahi? ( net-dns/avahi:=[autoipd] )
 	connection-sharing? (
 		net-dns/dnsmasq[dhcp]
@@ -126,7 +126,6 @@ src_prepare() {
 
 multilib_src_configure() {
 	# TODO: enable wimax when we have a libnl:3 compatible revision of it
-	# We are not ready for bluez5 yet
 	local myeconfargs=()
 	# Common options for all ABIs
 	myeconfargs+=(
@@ -150,7 +149,7 @@ multilib_src_configure() {
 	    # Disable as many dependencies as possible without affecting
 	    # NetworkManager libraries
     	myeconfargs+=(
-    		--disable-bluez4
+    		--disable-bluez5-dun
     		--disable-ifnet
     		--without-session-tracking
     		--disable-ppp
@@ -162,7 +161,7 @@ multilib_src_configure() {
     )
     else
     	myeconfargs+=(
-    		--enable-bluez4
+    		--enable-bluez5-dun
     		$(usex systemd '--disable-ifnet' '--enable-ifnet')
     		--with-session-tracking=$(usex systemd systemd $(usex consolekit consolekit no))
     		--with-suspend-resume=$(usex systemd systemd upower)

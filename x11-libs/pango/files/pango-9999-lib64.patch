@@ -1,0 +1,24 @@
+--- pango/Makefile.am~
++++ pango/Makefile.am
+@@ -17,6 +17,7 @@ INCLUDES =						\
+ 	-DPANGO_ENABLE_BACKEND				\
+ 	-DPANGO_ENABLE_ENGINE				\
+ 	-DSYSCONFDIR=\"$(sysconfdir)\"			\
++	-DHOST=\"$(host_triplet)\"			\
+ 	-DLIBDIR=\"$(libdir)\"				\
+ 	-I$(top_srcdir)					\
+ 	-I$(top_builddir)				\
+--- pango/pango-utils.c~	2015-05-08 00:54:55.000000000 +0100
++++ pango/pango-utils.c	2015-05-08 00:59:29.595117939 +0100
+@@ -593,9 +593,9 @@
+       const char *tmp_result = NULL;
+       const char *sysconfdir = g_getenv ("PANGO_SYSCONFDIR");
+       if (sysconfdir != NULL)
+-	tmp_result = g_build_filename (sysconfdir, "pango", NULL);
++	tmp_result = g_build_filename (sysconfdir, "pango", HOST, NULL);
+       else
+-	tmp_result = SYSCONFDIR "/pango";
++	tmp_result = SYSCONFDIR "/pango" HOST;
+       g_once_init_leave(&result, tmp_result);
+     }
+   return result;

@@ -6,7 +6,7 @@ EAPI="5"
 
 SCM=""
 if [ "${PV%9999}" != "${PV}" ] ; then # Live ebuild
-	SCM=git-2
+	SCM=git-r3
 	EGIT_REPO_URI="git://anongit.freedesktop.org/git/vaapi/intel-driver"
 fi
 
@@ -16,7 +16,6 @@ DESCRIPTION="HW video decode support for Intel integrated graphics"
 HOMEPAGE="http://www.freedesktop.org/wiki/Software/vaapi"
 if [ "${PV%9999}" != "${PV}" ] ; then # Live ebuild
 	SRC_URI=""
-	S="${WORKDIR}/${PN}"
 else
 	SRC_URI="http://www.freedesktop.org/software/vaapi/releases/libva-intel-driver/${P}.tar.bz2"
 fi

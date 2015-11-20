@@ -121,7 +121,7 @@ index 811f49d..f52956d 100644
 -			nm_device_set_managed (NM_DEVICE (iter->data), FALSE, NM_DEVICE_STATE_REASON_SLEEPING);
 -
 +		nm_dispatcher_call (DISPATCHER_ACTION_PRE_SLEEP, NULL, NULL,
-+		                    (DispatcherFunc) pre_sleep_dispatcher_done, self);
++		                    pre_sleep_dispatcher_done, self);
 +		return;
  	} else {
  		nm_log_info (LOGD_SUSPEND, "waking up and re-enabling...");

@@ -6,7 +6,7 @@ EAPI=5
 
 SCM=""
 if [ "${PV%9999}" != "${PV}" ] ; then # Live ebuild
-	SCM=git-2
+	SCM=git-r3
 	EGIT_REPO_URI="git://anongit.freedesktop.org/vaapi/libva"
 #	EGIT_BRANCH=cl_branch
 #	EGIT_REPO_URI=git://people.freedesktop.org/~yakuiz/libva
@@ -18,7 +18,6 @@ DESCRIPTION="Video Acceleration (VA) API for Linux"
 HOMEPAGE="http://www.freedesktop.org/wiki/Software/vaapi"
 if [ "${PV%9999}" != "${PV}" ] ; then # Live ebuild
 	SRC_URI=""
-	S="${WORKDIR}/${PN}"
 else
 	SRC_URI="http://www.freedesktop.org/software/vaapi/releases/libva/${P}.tar.bz2"
 fi
@@ -56,7 +55,7 @@ PDEPEND="video_cards_nvidia? ( x11-libs/libva-vdpau-driver[${MULTILIB_USEDEP}] )
 	video_cards_intel? ( >=x11-libs/libva-intel-driver-1.0.18[${MULTILIB_USEDEP}] )
 	"
 
-REQUIRED_USE="opengl? ( X )"
+REQUIRED_USE="opengl? ( || ( wayland X ) )"
 
 ECONF_SOURCE="${S}"
 

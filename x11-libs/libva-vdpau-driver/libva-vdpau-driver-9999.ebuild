@@ -6,7 +6,7 @@ EAPI=4
 
 SCM=""
 if [ "${PV%9999}" != "${PV}" ] ; then # Live ebuild
-	SCM=git-2
+	SCM=git-r3
 	EGIT_BRANCH=master
 	EGIT_REPO_URI="git://anongit.freedesktop.org/vaapi/vdpau-driver"
 fi
@@ -17,7 +17,6 @@ DESCRIPTION="VDPAU Backend for Video Acceleration (VA) API"
 HOMEPAGE="http://www.freedesktop.org/wiki/Software/vaapi"
 if [ "${PV%9999}" != "${PV}" ] ; then # Live ebuild
 	SRC_URI=""
-	S="${WORKDIR}/${PN}"
 else
 	SRC_URI="http://www.freedesktop.org/software/vaapi/releases/libva-vdpau-driver/${P}.tar.bz2"
 fi

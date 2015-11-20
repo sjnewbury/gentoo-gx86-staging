@@ -1,0 +1,32 @@
+From 0119f36a08fdb63e41fe74e746760ba8b7c648ee Mon Sep 17 00:00:00 2001
+From: Emilio Pozuelo Monfort <emilio.pozuelo@collabora.co.uk>
+Date: Mon, 9 Dec 2013 12:14:18 +0100
+Subject: [PATCH] wayland: fail the backend init if WAYLAND_DISPLAY isn't set
+
+wl_display_connect() currently falls back to the wayland-0 socket
+if WAYLAND_DISPLAY isn't in the environment. This means that if a
+wayland compositor is running and you launch a GTK+ app from within
+X11, it may start running inside the wayland compositor. Avoid this
+by requiring WAYLAND_DISPLAY to be set.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=719989
+---
+ gdk/wayland/gdkdisplay-wayland.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/gdk/wayland/gdkdisplay-wayland.c b/gdk/wayland/gdkdisplay-wayland.c
+index 0e0c33e..2fb5ee3 100644
+--- a/gdk/wayland/gdkdisplay-wayland.c
++++ b/gdk/wayland/gdkdisplay-wayland.c
+@@ -230,6 +230,9 @@ _gdk_wayland_display_open (const gchar *display_name)
+ 
+   wl_log_set_handler_client(log_handler);
+ 
++  if (g_getenv ("WAYLAND_DISPLAY") == NULL)
++    return NULL;
++
+   wl_display = wl_display_connect(display_name);
+   if (!wl_display)
+     return NULL;
+-- 
+1.8.4.rc3

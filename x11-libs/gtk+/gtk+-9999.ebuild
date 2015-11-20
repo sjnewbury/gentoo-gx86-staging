@@ -39,13 +39,14 @@ fi
 # NOTE: cairo[svg] dep is due to bug 291283 (not patched to avoid eautoreconf)
 # Use gtk+:2 for gtk-update-icon-cache
 COMMON_DEPEND="
-	>=dev-libs/atk-2.7.5[introspection?,${MULTILIB_USEDEP}]
-	>=dev-libs/glib-2.41.2:2[${MULTILIB_USEDEP}]
+	>=dev-libs/atk-2.15.1[introspection?,${MULTILIB_USEDEP}]
+	>=dev-libs/glib-2.43.0:2[${MULTILIB_USEDEP}]
 	media-libs/fontconfig[${MULTILIB_USEDEP}]
-	>=x11-libs/cairo-1.12[aqua?,glib,svg,X?,${MULTILIB_USEDEP}]
+	media-libs/libepoxy[${MULTILIB_USEDEP}]
+	>=x11-libs/cairo-1.14.0[aqua?,glib,svg,X?,${MULTILIB_USEDEP}]
 	>=x11-libs/gdk-pixbuf-2.27.1:2[introspection?,X?,${MULTILIB_USEDEP}]
 	>=x11-libs/gtk+-2.24:2[${MULTILIB_USEDEP}]
-	>=x11-libs/pango-1.32.4[introspection?,${MULTILIB_USEDEP}]
+	>=x11-libs/pango-1.36.7[introspection?,${MULTILIB_USEDEP}]
 	x11-misc/shared-mime-info
 
 	cloudprint? (
@@ -72,7 +73,9 @@ COMMON_DEPEND="
 		x11-libs/libXdamage[${MULTILIB_USEDEP}]
 		xinerama? ( x11-libs/libXinerama[${MULTILIB_USEDEP}] )
 	)
+	~x11-themes/adwaita-icon-theme-${PV}
 "
+
 DEPEND="${COMMON_DEPEND}
 	app-text/docbook-xsl-stylesheets
 	app-text/docbook-xml-dtd:4.1.2
@@ -118,7 +121,9 @@ strip_builddir() {
 }
 
 src_prepare() {
-	epatch "${FILESDIR}/wayland-first.diff"
+	epatch "${FILESDIR}/dont-mess-with-xwayland-visuals.diff"
+#	epatch "${FILESDIR}/${P}-prefer-wayland.patch"
+#	epatch "${FILESDIR}/wayland-only-on-wayland.patch"
 
 	# -O3 and company cause random crashes in applications. Bug #133469
 	replace-flags -O3 -O2
@@ -208,6 +213,7 @@ multilib_src_install_all() {
 	doins "${FILESDIR}"/settings.ini
 
 	dodoc AUTHORS ChangeLog* HACKING NEWS* README*
+	rm -f ${ED}usr/bin/gtk-update-icon-cache
 }
 
 pkg_preinst() {

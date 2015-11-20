@@ -27,7 +27,7 @@ fi
 RDEPEND="
 	>=dev-libs/glib-2.37.3:2
 	>=dev-libs/libxml2-2.6:2
-	>=x11-libs/gtk+-3.11:3[introspection?]
+	>=x11-libs/gtk+-3.15.0:3[introspection?]
 	glade? ( >=dev-util/glade-3.9:3.10 )
 	introspection? ( >=dev-libs/gobject-introspection-0.9.0 )
 "

@@ -10,6 +10,7 @@ PYTHON_REQ_USE="xml"
 inherit gnome2 python-single-r1 toolchain-funcs autotools
 if [[ ${PV} = 9999 ]]; then
 	inherit gnome2-live
+	LIVE_SUFFIX=-git
 fi
 inherit multilib-minimal
 
@@ -57,7 +58,7 @@ disable_python_for_x86() {
 		cd ${BUILD_DIR}
 		
 		# disable configure checks
-		epatch ${FILESDIR}/disable_python.patch
+		epatch ${FILESDIR}/disable_python${LIVE_SUFFIX}.patch
 		
 		# disable python bindings
 		sed -i -e "s/include Makefile-giscanner.am//" Makefile.am || die "sed failed"

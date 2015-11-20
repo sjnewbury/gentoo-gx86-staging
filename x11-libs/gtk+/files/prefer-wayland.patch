@@ -1,0 +1,41 @@
+From 0a0d0c9ee3c1e69ed9a777df3d9a25be44f3f8d4 Mon Sep 17 00:00:00 2001
+From: Emilio Pozuelo Monfort <emilio.pozuelo@collabora.co.uk>
+Date: Mon, 9 Dec 2013 12:18:28 +0100
+Subject: [PATCH] gdk: try the wayland backend before the x11 one
+
+If both the x11 and wayland backends are available, we want the
+wayland backend tried first, so that when running from a wayland
+compositor with XWayland support, the app runs natively with the
+wayland backend instead of through XWayland.
+
+This doesn't affect apps run from within X11 because there
+WAYLAND_DISPLAY will not be set and so the wayland backend
+initialization will fail.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=719989
+---
+ gdk/gdkdisplaymanager.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/gdk/gdkdisplaymanager.c b/gdk/gdkdisplaymanager.c
+index 94f857e..075f507 100644
+--- a/gdk/gdkdisplaymanager.c
++++ b/gdk/gdkdisplaymanager.c
+@@ -267,12 +267,12 @@ static GdkBackend gdk_backends[] = {
+ #ifdef GDK_WINDOWING_WIN32
+   { "win32",    _gdk_win32_display_open },
+ #endif
+-#ifdef GDK_WINDOWING_X11
+-  { "x11",      _gdk_x11_display_open },
+-#endif
+ #ifdef GDK_WINDOWING_WAYLAND
+   { "wayland",  _gdk_wayland_display_open },
+ #endif
++#ifdef GDK_WINDOWING_X11
++  { "x11",      _gdk_x11_display_open },
++#endif
+ #ifdef GDK_WINDOWING_BROADWAY
+   { "broadway", _gdk_broadway_display_open },
+ #endif
+-- 
+1.8.4.rc3
