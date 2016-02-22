@@ -4,7 +4,7 @@
 
 EAPI=5
 
-inherit toolchain pax-utils eutils unpacker fdo-mime gnome2-utils multilib-minimal
+inherit toolchain pax-utils eutils unpacker fdo-mime gnome2-utils multilib
 
 MY_32B_URI="http://dl.google.com/dl/earth/client/current/google-earth-stable_current_i386.deb
 			-> GoogleEarthLinux-${PV}_i386.deb"
@@ -16,10 +16,8 @@ HOMEPAGE="http://earth.google.com/"
 # no upstream versioning, version determined from help/about
 # incorrect digest means upstream bumped and thus needs version bump
 SRC_URI="x86? ( ${MY_32B_URI} )
-amd64? (
-		abi_x86_64? ( ${MY_64B_URI} )
-		abi_x86_32? ( ${MY_32B_URI} )
-)"	
+amd64? ( ${MY_64B_URI} )
+"	
 LICENSE="googleearth GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
@@ -61,7 +59,9 @@ RDEPEND="
 		dev-libs/nss
 		sci-libs/gdal
 		sci-libs/proj
-	)"
+	)
+	!!app-text/evince[nsplugin]
+"
 DEPEND="dev-util/patchelf"
 
 S=${WORKDIR}/opt/google/earth/free
@@ -142,6 +142,10 @@ src_prepare() {
 	sed -i \
 		-e "/LD_LIBRARY_PATH/s/^/LD_PRELOAD=\/usr\/$(get_libdir)\/libfreeimage.so.3:.\/baifaao.so /" \
 		googleearth	|| die
+}
+
+src_configure() {
+:
 }
 
 src_compile() {
