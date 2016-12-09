@@ -27,13 +27,12 @@ if [ "${PV%9999}" = "${PV}" ] ; then
 else
 	KEYWORDS=""
 fi
-IUSE="+drm wayland X opencl"
+IUSE="+drm wayland X"
 
 RDEPEND=">=x11-libs/libva-1.2.0[X?,wayland?,drm?,${MULTILIB_USEDEP}]
 	!<x11-libs/libva-1.0.15[video_cards_intel,${MULTILIB_USEDEP}]
 	>=x11-libs/libdrm-2.4.45[video_cards_intel,${MULTILIB_USEDEP}]
-	wayland? ( media-libs/mesa[egl,${MULTILIB_USEDEP}] >=dev-libs/wayland-1[${MULTILIB_USEDEP}] )
-	opencl? ( media-libs/mesa[beignet,${MULTILIB_USEDEP}] )"
+	wayland? ( media-libs/mesa[egl,${MULTILIB_USEDEP}] >=dev-libs/wayland-1[${MULTILIB_USEDEP}] )"
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
@@ -41,6 +40,8 @@ DEPEND="${RDEPEND}
 ECONF_SOURCE="${S}"
 
 src_prepare() {
+	default
+	epatch_user
 	eautoreconf
 }
 
@@ -49,8 +50,7 @@ multilib_src_configure() {
 		--disable-silent-rules \
 		$(use_enable drm) \
 		$(use_enable wayland) \
-		$(use_enable X x11) \
-		$(use_enable opencl)
+		$(use_enable X x11)
 }
 
 multilib_src_install() {
