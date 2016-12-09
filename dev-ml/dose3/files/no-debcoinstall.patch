@@ -1,0 +1,12 @@
+--- Makefile.config.in~	2016-11-06 11:41:37.000000000 +0000
++++ Makefile.config.in	2016-11-06 12:31:11.421681410 +0000
+@@ -90,8 +90,7 @@
+    ceve.@OCAMLEXT@ \
+    apt-cudf.@OCAMLEXT@ \
+ 	 outdated.@OCAMLEXT@ \
+-	 challenged.@OCAMLEXT@ \
+-   deb-coinstall.@OCAMLEXT@
++	 challenged.@OCAMLEXT@
+ 
+ BYTELIBS=
+ OPTLIBS=
