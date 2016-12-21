@@ -1,0 +1,33 @@
+--- ./Makefile.orig	2016-12-21 12:03:58.071038954 +0000
++++ ./Makefile	2016-12-21 12:46:44.540982778 +0000
+@@ -36,12 +36,18 @@
+ 	mkdir -p build
+ 
+ build/%.o: %.c $(HDRS)
+-	$(CC) $(CFLAGS) -o $@ -c $<
++	$(CC) $(CFLAGS) -fPIC -o $@ -c $<
+ 
+ build/libmujs.a: $(OBJS)
+ 	$(AR) cru $@ $^
+ 
+-build/mujs: build/main.o build/libmujs.a
++build/libmujs.so.0: $(OBJS)
++	$(CC) ${LDFLAGS} -shared -Wl,-soname,libmujs.so -fPIC -o $@ $^
++
++build/libmujs.so: build/libmujs.so.0
++	ldconfig -v -n build
++
++build/mujs: build/main.o build/libmujs.so
+ 	$(CC) $(LDFLAGS) -o $@ $^ -lm
+ 
+ build/mujsone: build/main.o build/one.o
+@@ -52,7 +58,8 @@
+ 	install -d $(DESTDIR)$(libdir)
+ 	install -d $(DESTDIR)$(bindir)
+ 	install mujs.h $(DESTDIR)$(incdir)
+-	install build/libmujs.a $(DESTDIR)$(libdir)
++	install build/libmujs.so.0 $(DESTDIR)$(libdir)
++	install build/libmujs.so $(DESTDIR)$(libdir)
+ 	install build/mujs $(DESTDIR)$(bindir)
+ 
+ VERSION = $(shell git describe --tags --always)
