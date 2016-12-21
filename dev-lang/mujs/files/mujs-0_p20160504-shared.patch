@@ -12,7 +12,7 @@
  
 -build/mujs: build/main.o build/libmujs.a
 +build/libmujs.so.0: $(OBJS)
-+	$(CC) ${LDFLAGS} -shared -Wl,-soname,libmujs.so -fPIC -o $@ $^
++	$(CC) ${LDFLAGS} -shared -Wl,-soname,libmujs.so -fPIC -o $@ $^ -lm
 +
 +build/libmujs.so: build/libmujs.so.0
 +	ldconfig -v -n build
@@ -27,7 +27,7 @@
  	install mujs.h $(DESTDIR)$(incdir)
 -	install build/libmujs.a $(DESTDIR)$(libdir)
 +	install build/libmujs.so.0 $(DESTDIR)$(libdir)
-+	install build/libmujs.so $(DESTDIR)$(libdir)
++	ln -s libmujs.so.0 $(DESTDIR)$(libdir)/libmujs.so
  	install build/mujs $(DESTDIR)$(bindir)
  
  VERSION = $(shell git describe --tags --always)
