@@ -7,7 +7,7 @@ EAPI=5
 SCM=""
 if [ "${PV%9999}" != "${PV}" ] ; then # Live ebuild
 	SCM=git-r3
-	EGIT_REPO_URI="git://anongit.freedesktop.org/vaapi/libva"
+	EGIT_REPO_URI="git://github.com/01org/libva"
 #	EGIT_BRANCH=cl_branch
 #	EGIT_REPO_URI=git://people.freedesktop.org/~yakuiz/libva
 fi

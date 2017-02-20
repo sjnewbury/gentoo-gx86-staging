@@ -7,7 +7,7 @@ EAPI="5"
 SCM=""
 if [ "${PV%9999}" != "${PV}" ] ; then # Live ebuild
 	SCM=git-r3
-	EGIT_REPO_URI="git://anongit.freedesktop.org/git/vaapi/intel-driver"
+	EGIT_REPO_URI="git://github.com/01org/libva-intel-driver"
 fi
 
 inherit autotools ${SCM} multilib-minimal
