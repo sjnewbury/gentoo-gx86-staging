@@ -1,0 +1,77 @@
+--- ./configure.ac.orig	2018-11-30 00:24:35.794368123 +0000
++++ ./configure.ac	2018-11-30 08:30:35.823844731 +0000
+@@ -414,19 +414,8 @@
+ }
+ 
+ find_ssl_dir() { :
+-    stunnel_prefix="$prefix"
+-    test "x$stunnel_prefix" = "xNONE" && stunnel_prefix=$ac_default_prefix
+-    # OpenSSL directory search order:
+-    # - the user-specified prefix
+-    # - common locations for packages built from sources
+-    # - common locations for non-OS-default package managers
+-    # - common locations for OS-default package managers
+-    # - empty prefix
+-    for main_dir in "$stunnel_prefix" "/usr/local" "/opt" "/opt/local" "/usr/local/opt" "/opt/csw" "/usr/pkg" "/usr/lib" "/usr" ""; do
+-        for sub_dir in "/ssl" "/openssl" "/ossl" ""; do
+-            check_ssl_dir "$sysroot$main_dir$sub_dir" && return
+-        done
+-    done
++    PKG_CHECK_MODULES([OPENSSL], [openssl >= 1.0], [
++        SSL_FOUND=1; SSLDIR="/usr"; return])
+     if test -x "/usr/bin/xcrun"; then
+         sdk_path=`/usr/bin/xcrun --sdk macosx --show-sdk-path`
+         check_ssl_dir "$sdk_path/usr" && return
+@@ -435,25 +424,29 @@
+ }
+ 
+ SSLDIR=""
+-AC_MSG_CHECKING([for TLS directory])
+ AC_ARG_WITH(ssl,
+ [  --with-ssl=DIR          location of installed TLS libraries/include files],
+     [check_ssl_dir "$withval"],
+     [find_ssl_dir]
+ )
++AC_MSG_CHECKING([for TLS directory])
+ if test -z "$SSLDIR"; then
+-AC_MSG_RESULT([not found])
+-AC_MSG_ERROR([
+-Could not find your TLS library installation dir
+-Use --with-ssl option to fix this problem
+-]) 
++    AC_MSG_RESULT([not found])
++    AC_MSG_ERROR([
++    Could not find your TLS library installation dir
++    Use --with-ssl option to fix this problem])] 
++else
++    if test "$SSL_FOUND" = "1"; then
++        valid_CPPFLAGS="$CPPFLAGS $OPENSSL_CFLAGS"
++        valid_LIBS="$LIBS $OPENSSL_LIBS"
++    else
++        valid_CPPFLAGS="$CPPFLAGS -I$SSLDIR/include"
++        valid_LIBS="$LIBS -L$SSLDIR/lib64 -L$SSLDIR/lib -lssl -lcrypto"
++    fi
++    AC_MSG_RESULT([$SSLDIR])
++    AC_SUBST([SSLDIR])
++    AC_DEFINE_UNQUOTED([SSLDIR], ["$SSLDIR"], [TLS directory])
+ fi
+-AC_MSG_RESULT([$SSLDIR])
+-AC_SUBST([SSLDIR])
+-AC_DEFINE_UNQUOTED([SSLDIR], ["$SSLDIR"], [TLS directory])
+-
+-valid_CPPFLAGS="$CPPFLAGS"; CPPFLAGS="$CPPFLAGS -I$SSLDIR/include"
+-valid_LIBS="$LIBS"; LIBS="$LIBS -L$SSLDIR/lib64 -L$SSLDIR/lib -lssl -lcrypto"
+ 
+ if test "x$use_fips" = "xauto"; then
+     AC_CHECK_FUNCS(FIPS_mode_set, [
+--- ./src/Makefile.am~	2018-06-08 18:30:06.000000000 +0100
++++ ./src/Makefile.am	2018-11-30 08:55:25.720080507 +0000
+@@ -46,7 +46,7 @@
+ stunnel_CPPFLAGS += -DCONFDIR='"$(sysconfdir)/stunnel"'
+ 
+ # TLS library
+-stunnel_LDFLAGS = -L$(SSLDIR)/lib64 -L$(SSLDIR)/lib -lssl -lcrypto
++stunnel_LDFLAGS = $(LDFLAGS) $(CPPFLAGS) $(LIBS)
+ 
+ # stunnel3 script
+ edit = sed \

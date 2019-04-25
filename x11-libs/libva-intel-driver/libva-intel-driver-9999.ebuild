@@ -2,12 +2,12 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/x11-libs/libva-intel-driver/libva-intel-driver-9999.ebuild,v 1.9 2013/06/26 19:06:32 aballier Exp $
 
-EAPI="5"
+EAPI="6"
 
 SCM=""
 if [ "${PV%9999}" != "${PV}" ] ; then # Live ebuild
 	SCM=git-r3
-	EGIT_REPO_URI="git://github.com/01org/libva-intel-driver"
+	EGIT_REPO_URI="https://github.com/intel/intel-vaapi-driver.git"
 fi
 
 inherit autotools ${SCM} multilib-minimal
@@ -39,9 +39,13 @@ DEPEND="${RDEPEND}
 
 ECONF_SOURCE="${S}"
 
+PATCHES=(
+#	"${FILESDIR}/0001-DRI3-Add-DRI3-and-Present-extension-support.patch"
+#	"${FILESDIR}/0002-DRI3-Hooks-to-enable-DRI3-and-Present.patch"
+	)
+
 src_prepare() {
 	default
-	epatch_user
 	eautoreconf
 }
 
@@ -50,7 +54,8 @@ multilib_src_configure() {
 		--disable-silent-rules \
 		$(use_enable drm) \
 		$(use_enable wayland) \
-		$(use_enable X x11)
+		$(use_enable X x11) \
+		$(use_enable X dri3) 
 }
 
 multilib_src_install() {

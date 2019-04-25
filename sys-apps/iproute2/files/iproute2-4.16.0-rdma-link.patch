@@ -1,0 +1,11 @@
+--- ./rdma/Makefile~	2018-04-29 13:07:55.000000000 +0100
++++ ./rdma/Makefile	2018-04-29 15:41:41.333963177 +0100
+@@ -13,7 +13,7 @@
+ 
+ all:	$(TARGETS) $(LDLIBS)
+ 
+-rdma:	$(RDMA_OBJ) $(LIBS)
++rdma:	$(RDMA_OBJ) $(LIBNETLINK) $(LIBUTIL)
+ 	$(QUIET_LINK)$(CC) $^ $(LDFLAGS) $(LDLIBS) -o $@
+ 
+ install: all

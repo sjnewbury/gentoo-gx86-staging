@@ -42,12 +42,10 @@ RDEPEND="sound? ( >=media-libs/audiofile-0.1.9[${MULTILIB_USEDEP}] )
 	pulseaudio? ( media-sound/pulseaudio[${MULTILIB_USEDEP}] )"
 DEPEND="${RDEPEND}
 	nas? (
-		x11-proto/xextproto[${MULTILIB_USEDEP}]
-		x11-proto/xproto[${MULTILIB_USEDEP}]
+		x11-base/xorg-proto
 	)
 	X? (
-		x11-proto/xextproto[${MULTILIB_USEDEP}]
-		x11-proto/xproto[${MULTILIB_USEDEP}]
+		x11-base/xorg-proto
 	)
 	x86? ( || ( >=dev-lang/yasm-0.6.0 >=dev-lang/nasm-0.98.39-r3 ) )"
 

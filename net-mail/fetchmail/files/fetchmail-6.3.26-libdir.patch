@@ -1,0 +1,72 @@
+--- ./configure.ac~	2013-04-23 21:51:10.000000000 +0100
++++ ./configure.ac	2018-11-08 07:54:54.735281122 +0000
+@@ -327,7 +327,7 @@
+ #
+ 
+ AC_PATH_PROG(procmail, procmail, "", $PATH:/usr/sbin)
+-AC_PATH_PROG(sendmail, sendmail, "", $PATH:/usr/sbin:/usr/lib)
++AC_PATH_PROG(sendmail, sendmail, "", $PATH:/usr/sbin)
+ AC_PATH_PROG(maildrop, maildrop, "", $PATH:/usr/local/bin)
+ 
+ ###	use option --disable-fallback to disable fallback MDA
+--- ./configure.ac~	2018-11-08 08:15:16.000000000 +0000
++++ ./configure.ac	2018-11-08 08:29:18.180253407 +0000
+@@ -571,7 +571,7 @@
+ else
+   if test "$with_kerberos5" != "yes" 
+   then
+-      LDFLAGS="$LDFLAGS -L${with_kerberos5}/lib"
++      test "$with_kerberos5" != "/usr" && LDFLAGS="$LDFLAGS -L${with_kerberos5}/lib"
+       searchdirs="$with_kerberos5"
+   else
+       searchdirs="/usr/kerberos /usr/local/krb5 /usr/athena /usr"
+@@ -614,8 +614,11 @@
+            continue,
+            ${LDFLAGS} ${ac_krblibs})
+         AC_DEFINE(KERBEROS_V5)
+-        test "$dir" != "/usr" && CFLAGS="$CFLAGS -I$dir/include"
+-        LDFLAGS="$LDFLAGS -L$dir/lib"
++        if test "$dir" != "/usr"
++        then
++            CFLAGS="$CFLAGS -I$dir/include"
++            LDFLAGS="$LDFLAGS -L$dir/lib"
++	 fi
+        LIBS="$LIBS $ac_krblibs $libk5crypto"
+         with_kerberos5=$dir
+         break
+@@ -690,7 +693,7 @@
+      if test -f "$with_kerberos5/roken.h" ; then
+        AC_CHECK_LIB(45, krb_mk_req)
+      fi
+-     LDFLAGS="-L$dir/lib $ac_saveLDFLAGS"
++     test "$dir" != "/usr" && LDFLAGS="-L$dir/lib $ac_saveLDFLAGS"
+      if test `uname` = "FreeBSD"; then
+         AC_SEARCH_LIBS(_ossl_old_des_string_to_key, [des425 des crypto], [], continue)
+      else
+@@ -706,7 +709,7 @@
+      KERBEROS_V4=1
+      test -f "$with_kerberos5/roken.h" && AC_DEFINE(HEIMDAL)
+      test "$dir" != "/usr/include" && CFLAGS="$CFLAGS -I$dir"
+-     LDFLAGS="$LDFLAGS -L$with_kerberos/lib"
++     test "$with_kerberos" != "/usr" && LDFLAGS="$LDFLAGS -L$with_kerberos/lib"
+      break
+   done
+   if test -z "$with_kerberos" ; then
+@@ -777,7 +780,7 @@
+   else
+     AC_MSG_ERROR([SSL support enabled, but OpenSSL not found])
+   fi
+-  LDFLAGS="$LDFLAGS -L$with_ssl/lib"
++  test "$with_ssl" != "/usr" && LDFLAGS="$LDFLAGS -L$with_ssl/lib"
+   LIBS="$LIBS -lssl -lcrypto"
+   dnl check if -ldl is needed
+   AC_MSG_CHECKING([for additional library dependencies of SSL])
+@@ -864,7 +867,7 @@
+   if test "$with_gssapi" != "yes" -a -n "$with_gssapi"
+   then
+     CFLAGS="$CFLAGS -I$with_gssapi/include"
+-    LDFLAGS="$LDFLAGS -L$with_gssapi/lib"
++    test "$with_gssapi" != "/usr" && LDFLAGS="$LDFLAGS -L$with_gssapi/lib"
+   fi
+ 
+   dnl obtain gssapi default libs
